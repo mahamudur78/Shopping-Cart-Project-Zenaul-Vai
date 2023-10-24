@@ -31,7 +31,8 @@
                 <!-- <input type="text" id="product-search" placeholder="Search Product" onkeyup="itemSearch(this)" /> -->
                 <input type="text" id="product-search" placeholder="Search Product" />
 
-                <button class="btn btn-dark mr-10" type="button">Add Product</button>
+                <!-- <button class="btn btn-dark mr-10" type="button">Add Product</button> -->
+                <button type="button" class="btn btn-dark mr-10" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
             </div>
 
             <div class="row">
@@ -62,7 +63,7 @@
 
                     <div class="custom-range-slider mt-3">
                         <h5>Price Range Search</h5>
-                        <input type="range" class="form-range" min="0" max="50000" step="1000" id="customRange3" />
+                        <input type="range" class="form-range" value="0" min="0" max="50000" step="1000" id="product-rande-search" />
                         <div class="price-range-input">
                             <input type="number" id="product-price-min" placeholder="Min" onkeyup="" />
                             <input type="number" id="product-price-max" placeholder="Max" onkeyup="" />
@@ -106,6 +107,49 @@
                 </div>
             </div>
         </div>
+
+        <!-- Add Product Modal Start-->
+
+        <!-- The Modal -->
+        <div class="modal" id="addProductModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Product</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="productName" placeholder="" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="productPrice" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="productPrice" placeholder="" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="productStock" class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="productStock" placeholder="" />
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Product Modal End-->
+
         <script src="main.js"></script>
     </body>
 </html>

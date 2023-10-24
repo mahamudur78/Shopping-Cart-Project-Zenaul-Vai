@@ -117,8 +117,13 @@ function itemOrder(productID){
         };
         
     }
-    productSearch.value = '';
-    displayProduct(productList);
+
+    if(productSearch.value){
+        itemSearch(productSearch);
+    }else{
+        displayProduct(productList);
+    }
+    
 }
 
 function cartMinus(index, productID){
@@ -133,14 +138,23 @@ function cartMinus(index, productID){
         }
     });
 
-    displayProduct(productList);
+    if(productSearch.value){
+        itemSearch(productSearch);
+    }else{
+        displayProduct(productList);
+    }
 }
 
 function cartPlus(index, productID){
 
     const productIndex = productList.findIndex(item => item.id === productID);
     checkProductStock(productIndex, () => cartItem[index].cartTotal++);
-    displayProduct(productList);
+
+    if(productSearch.value){
+        itemSearch(productSearch);
+    }else{
+        displayProduct(productList);
+    }
 }
 
 
@@ -192,3 +206,24 @@ function itemSearch(data){
     }
 }
 
+// // product-rande-search
+// document.querySelector('#product-rande-search').addEventListener('input', searchDelay(() =>{
+//     const data = document.querySelector('#product-rande-search');
+//     console.log(data.value);
+//     itemRandeSearch(data);
+    
+// },500));
+
+
+// function itemRandeSearch(data){    
+//     var search = new RegExp(data.value , 'i');
+//     let resultArray = productList.filter(item => {
+//         return search.test(item.Price);
+//     });
+
+//     if(resultArray.length != 0){
+//         displayProduct(resultArray);
+//     }else{
+//         allProductList.innerHTML = `<li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center"><h6>Product Not Found</h6></li>`;
+//     }
+// }
