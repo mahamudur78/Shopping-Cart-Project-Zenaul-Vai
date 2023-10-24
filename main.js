@@ -43,7 +43,7 @@ const totalCartItemSection = document.querySelector('#total-cart-item-section');
 
 function displayProduct(productList){
 
-    allProductList.innerHTML = productList.map((value, index) => {
+    allProductList.innerHTML = productList.map((value) => {
         return `
         <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
             <div>
@@ -53,7 +53,7 @@ function displayProduct(productList){
             <div class="d-inline-flex align-items-center">
                 <button type="button" class="p-1">✏️</button>
                 <button type="button" class="p-1 m-2">❌</button> 
-                <button type="button" class="item-plus btn btn-success" onclick="itemOrder(${index}, ${value.id})">Add to Cart</button>
+                <button type="button" class="item-plus btn btn-success" onclick="itemOrder(${value.id})">Add to Cart</button>
             </div>
             
         </li>`;
@@ -96,22 +96,23 @@ function displayProduct(productList){
 window.onload = displayProduct(productList);
 
 const productSearch = document.querySelector("#product-search");
-function itemOrder(index, productID){
+function itemOrder(productID){
     let cartItemCount = cartItem.length;
 
     let findItem = cartItem.find(item => item.id === productID);
+    let productIndex = productList.findIndex(item => item.id === productID);
     if(cartItemCount != 0 && findItem ){
         
         const cartIndex = cartItem.findIndex(item => item.id === productID);
-        checkProductStock(index, () => {cartItem[cartIndex].cartTotal++});
+        checkProductStock(productIndex, () => {cartItem[cartIndex].cartTotal++});
         
         
     }else{
-        checkProductStock(index, () => {});
+        checkProductStock(productIndex, () => {});
         cartItem[cartItemCount] = { 
-            id: productList[index].id,
-            itemName: productList[index].productName,
-            price: productList[index].Price,
+            id: productList[productIndex].id,
+            itemName: productList[productIndex].productName,
+            price: productList[productIndex].Price,
             cartTotal: 1,
         };
         
