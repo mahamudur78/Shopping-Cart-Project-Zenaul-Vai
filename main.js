@@ -1,37 +1,4 @@
-const productList = [
-    {
-        id: 1,
-        productName: 'Dell Vostro 14 3400',
-        Price: 4000,
-        stock: 20
-    },
-    {
-        id: 2,
-        productName: 'Lenovo IdeaPad 3 15ALC6',
-        Price: 30000,
-        stock: 3
-    },
-    {
-        id: 3,
-        productName: 'ASUS VivoBook 15 X515EA',
-        Price: 50000,
-        stock: 23
-    },
-    {
-        id: 4,
-        productName: 'DOEL Freedom A9 AMD A9-9425',
-        Price: 69000,
-        stock: 22
-    },
-    {
-        id: 5,
-        productName: 'Lenovo IdeaPad Slim 3i Intel',
-        Price: 45072,
-        stock: 11
-    },
-];
-
-
+const productList = [];
 const cartItem = [];
 
 
@@ -48,12 +15,12 @@ function displayProduct(productList){
         <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
             <div>
                 <h5>${value.productName} (${value.stock})</h5>
-                <p>${value.Price}TK</p>
+                <p>${value.price}TK</p>
             </div>
             <div class="d-inline-flex align-items-center">
-                <button type="button" class="p-1">✏️</button>
-                <button type="button" class="p-1 m-2">❌</button> 
-                <button type="button" class="item-plus btn btn-success" onclick="itemOrder(${value.id})">Add to Cart</button>
+                <button type="button" class="p-1" data-bs-toggle="modal" data-bs-target="#editProductModal" onclick="editProduct('${value._id}')">✏️</button>
+                <button type="button" class="p-1 m-2" onclick="deleteProduct('${value._id}')">❌</button> 
+                <button type="button" class="item-plus btn btn-success" onclick="itemOrder('${value._id}')">Add to Cart</button>
             </div>
             
         </li>`;
@@ -67,9 +34,9 @@ function displayProduct(productList){
                         <h6>${value.itemName}</h6>
                     </div>
                     <div>
-                        <button class="cart-minus cursorPointer" onclick="cartMinus(${index}, ${value.id})">➖</button>
+                        <button class="cart-minus cursorPointer" onclick="cartMinus(${index}, '${value._id}')">➖</button>
                             <span class="m-2">${value.cartTotal}</span>
-                        <button class="cart-plus cursorPointer" onclick="cartPlus(${index}, ${value.id})">➕</button>
+                        <button class="cart-plus cursorPointer" onclick="cartPlus(${index}, '${value._id}')">➕</button>
                     </div>
                 </li>
             </div>
@@ -89,30 +56,26 @@ function displayProduct(productList){
 
     cartTotalItem.innerHTML = cartTotal;
     cartTotalPrice.innerHTML = `${totalPrice.toLocaleString()} Tk`;
-
-
 }
-
-window.onload = displayProduct(productList);
 
 const productSearch = document.querySelector("#product-search");
 function itemOrder(productID){
     let cartItemCount = cartItem.length;
 
-    let findItem = cartItem.find(item => item.id === productID);
-    let productIndex = productList.findIndex(item => item.id === productID);
+    let findItem = cartItem.find(item => item._id === productID);
+    let productIndex = productList.findIndex(item => item._id === productID);
     if(cartItemCount != 0 && findItem ){
         
-        const cartIndex = cartItem.findIndex(item => item.id === productID);
+        const cartIndex = cartItem.findIndex(item => item._id === productID);
         checkProductStock(productIndex, () => {cartItem[cartIndex].cartTotal++});
         
         
     }else{
         checkProductStock(productIndex, () => {});
         cartItem[cartItemCount] = { 
-            id: productList[productIndex].id,
+            _id: productList[productIndex]._id,
             itemName: productList[productIndex].productName,
-            price: productList[productIndex].Price,
+            price: productList[productIndex].price,
             cartTotal: 1,
         };
         
@@ -127,7 +90,7 @@ function itemOrder(productID){
 }
 
 function cartMinus(index, productID){
-    const productIndex = productList.findIndex(item => item.id === productID);
+    const productIndex = productList.findIndex(item => item._id === productID);
 
     returnProduct(productIndex, () =>{
         if(cartItem[index].cartTotal > 1){
@@ -147,7 +110,7 @@ function cartMinus(index, productID){
 
 function cartPlus(index, productID){
 
-    const productIndex = productList.findIndex(item => item.id === productID);
+    const productIndex = productList.findIndex(item => item._id === productID);
     checkProductStock(productIndex, () => cartItem[index].cartTotal++);
 
     if(productSearch.value){
@@ -172,8 +135,6 @@ function returnProduct(index, cb){
     productList[index].stock++;
     cb();
 }
-
-
 
 // product-search
 document.querySelector('#product-search').addEventListener('keyup', searchDelay(() =>{
@@ -227,3 +188,143 @@ function itemSearch(data){
 //         allProductList.innerHTML = `<li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center"><h6>Product Not Found</h6></li>`;
 //     }
 // }
+
+// Add Product
+const addProduct = document.querySelector('#add-product');
+
+addProduct.onsubmit = async function(event){
+    event.preventDefault();
+    
+    // prepare the form data
+    const formData = new FormData(addProduct);
+
+    const productFormData = {};
+    formData.forEach((value, key) => {
+        productFormData[key] = value;
+    });
+
+    // send the request to server
+    let response = await fetch("http://localhost:3000/products", {
+        method: "POST",
+        body: JSON.stringify(productFormData),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    // get response
+    let result = await response.json();
+    console.log(result);
+    getProduct();
+    // closeModal();
+    // window.location.assign("http://127.0.0.1:5501/")
+    
+    // clear Input Filed
+    document.querySelector('#productName').value = '';
+    document.querySelector('#productName').value = '';
+    document.querySelector('#productName').value = '';
+
+}
+
+
+
+async function getProduct(){
+    const productListGet = await fetch("http://localhost:3000/products", {
+        method: "GET",
+    });
+    
+    let result = await productListGet.json();
+    displayProduct(result);
+    [].splice.apply(productList, [0, productList.length].concat(result));    
+};
+
+window.onload = getProduct();
+
+
+async function deleteProduct(productID){
+    console.log(productID);
+    const productListGet = await fetch(`http://localhost:3000/products/${productID}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    
+    let result = await productListGet.json();
+    
+    getProduct();
+};
+
+
+async function editProduct(productID){
+    const productListGet = await fetch(`http://localhost:3000/products/${productID}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    
+    let result = await productListGet.json();
+    // Get Data
+    const editProductID = document.querySelector('#editProductID');
+    editProductID.value = result._id;
+
+    const productName = document.querySelector('#editProductName');
+    productName.value = result.productName;
+
+    const productPrice = document.querySelector('#editProductPrice');
+    productPrice.value = result.price;
+
+    const productStock = document.querySelector('#editProductStock');
+    productStock.value = result.stock;
+
+
+    //Update Data
+    const UpdateProduct = await fetch(`http://localhost:3000/products/${productID}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    
+    let updateResult = await UpdateProduct.json();
+    console.log(updateResult);
+    // getProduct();
+};
+
+const updateProduct = document.querySelector('#update-product');
+
+updateProduct.onsubmit = async function(event){
+    event.preventDefault();
+    
+    // prepare the form data
+    const formData = new FormData(updateProduct);
+
+    const productFormData = {};
+    formData.forEach((value, key) => {
+        productFormData[key] = value;
+    });
+
+    //Product Id
+    const editProductID = document.querySelector('#editProductID').value;
+    console.log(editProductID);
+    // send the request to server
+    let response = await fetch(`http://localhost:3000/products/${editProductID}`, {
+        method: "PUT",
+        body: JSON.stringify(productFormData),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    // get response
+    let result = await response.json();
+    console.log(result);
+    getProduct();
+    // closeModal();
+    // window.location.assign("http://127.0.0.1:5501/")
+}
+
+function buyProduct(){
+    console.log(cartItem);
+}
