@@ -1,7 +1,6 @@
 const productList = [];
 const cartItem = [];
 
-
 const allProductList = document.querySelector('.product-list');
 const cartItemList = document.querySelector('.cart-item-list');
 const cartTotalItem = document.querySelector('#cart-total-item');
@@ -71,13 +70,16 @@ function itemOrder(productID){
         
         
     }else{
-        checkProductStock(productIndex, () => {});
-        cartItem[cartItemCount] = { 
-            _id: productList[productIndex]._id,
-            itemName: productList[productIndex].productName,
-            price: productList[productIndex].price,
-            cartTotal: 1,
-        };
+        const checkStock = checkProductStock(productIndex, () => {});
+        if(checkStock){
+            cartItem[cartItemCount] = { 
+                _id: productList[productIndex]._id,
+                itemName: productList[productIndex].productName,
+                price: productList[productIndex].price,
+                cartTotal: 1,
+            };
+        }
+        
         
     }
 
@@ -126,9 +128,10 @@ function checkProductStock(index, cb){
     if(productList[index].stock > 0){
         productList[index].stock--;
         cb();
-    }else{
-        alert('Out Of Stock');
+        return true;
     }
+    alert('Out Of Stock');
+    return false
 }
 
 function returnProduct(index, cb){
@@ -229,13 +232,16 @@ addProduct.onsubmit = async function(event){
 
 
 async function getProduct(){
-    const productListGet = await fetch("http://localhost:3000/products", {
+    const productListGet = await fetch(`http://localhost:3000/products`, {
         method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
     
     let result = await productListGet.json();
-    displayProduct(result);
-    [].splice.apply(productList, [0, productList.length].concat(result));    
+    [].splice.apply(productList, [0, productList.length].concat(result));  
+    displayProduct(productList);  
 };
 
 window.onload = getProduct();
@@ -325,6 +331,21 @@ updateProduct.onsubmit = async function(event){
     // window.location.assign("http://127.0.0.1:5501/")
 }
 
-function buyProduct(){
-    console.log(cartItem);
+async function buyProduct(){
+    if(cartItem.length != 0){
+        let response = await fetch(`http://localhost:3000/buyproducts`, {
+            method: "PUT",
+            body: JSON.stringify(cartItem),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        let result = await response.json();
+       
+        
+        if(result.length != 0){
+            // cartItem.length = 0;
+            location.reload();
+        }
+    }
 }

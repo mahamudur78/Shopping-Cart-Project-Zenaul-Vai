@@ -11,7 +11,8 @@ app.use(cors());
 mongoose.connect('mongodb+srv://mahamudur789:iRq41JPW4irpjdDv@uttra.pt1sfo4.mongodb.net/brta_invoice_db?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+}).then(() => console.log("database connection successful!"))
+.catch((err) => console.log(err));
 
 const Product = mongoose.model('Product', {
   productName: String,
@@ -21,18 +22,19 @@ const Product = mongoose.model('Product', {
 
 // Get all products
 app.get('/products', async (req, res) => {
-  try {
-    const products = await Product.find();
-    res.json(products);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
+	res.header('Cache-Control', 'no-store');
+	try {
+		const products = await Product.find();
+		res.json(products);
+	} catch (error) {
+		res.status(500).json({ error: 'Internal Server Error' });
+	}
 });
 
 // Get a single product by ID
 app.get('/products/:id', async (req, res) => {
   const productId = req.params.id;
-  console.log(productId);
+//   console.log(productId);
   try {
     const product = await Product.findOne({ _id: productId });
     if (product) {
@@ -61,7 +63,7 @@ app.put('/products/:id', async (req, res) => {
   const productId = req.params.id;
   
   const updatedProduct = req.body;
-  console.log(updatedProduct);
+//   console.log(updatedProduct);
   try {
     const product = await Product.findOneAndUpdate({ _id: productId }, updatedProduct, { new: true });
     if (product) {
@@ -96,20 +98,24 @@ app.listen(PORT, () => {
 });
 
 // Buy product
-app.put('/products/buy', async (req, res) => {
+app.put('/buyproducts', async (req, res) => {
   
-  const updatedProduct = req.body;
-  console.log(updatedProduct);
+  const buyProduct = req.body;
+//   console.log(buyProduct);
   
-  // console.log(updatedProduct);
-  // try {
-  //   const product = await Product.findOneAndUpdate({ _id: productId }, updatedProduct, { new: true });
-  //   if (product) {
-  //     res.json(product);
-  //   } else {
-  //     res.status(404).json({ message: 'Product not found' });
-  //   }
-  // } catch (error) {
-  //   res.status(500).json({ error: 'Internal Server Error' });
-  // }
+  try {
+
+    let updateStock = buyProduct.map(async (data) =>{
+      	const product = await Product.findOne({ _id: data._id });
+		return await Product.findOneAndUpdate({ _id: data._id }, {stock: (product.stock - data.cartTotal)}, { new: true });
+    });
+
+    if (updateStock) {
+      res.json(updateStock);
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error111' });
+  }
 });
