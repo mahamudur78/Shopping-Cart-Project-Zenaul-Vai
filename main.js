@@ -12,9 +12,14 @@ function displayProduct(productList){
     allProductList.innerHTML = productList.map((value) => {
         return `
         <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
-            <div>
-                <h5>${value.productName} (${value.stock})</h5>
-                <p>${value.price}TK</p>
+            <div class="d-inline-flex">
+                <div class="p-2 product-img">
+                    <img src="/assets/photo3.jpg" alt="" srcset="">  
+                </div>
+                <div>
+                    <h5>${value.productName} (${value.stock})</h5>
+                    <p>${value.price}TK</p>
+                </div>
             </div>
             <div class="d-inline-flex align-items-center">
                 <button type="button" class="p-1" data-bs-toggle="modal" data-bs-target="#editProductModal" onclick="editProduct('${value._id}')">✏️</button>
@@ -331,8 +336,17 @@ updateProduct.onsubmit = async function(event){
     // window.location.assign("http://127.0.0.1:5501/")
 }
 
+
+const bouNowBtn = document.querySelector('#buy-now-btn');
+bouNowBtn.addEventListener('click', searchDelay(() =>{
+    buyProduct();
+}, 500));
+
 async function buyProduct(){
     if(cartItem.length != 0){
+
+        bouNowBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Loading...`;
         let response = await fetch(`http://localhost:3000/buyproducts`, {
             method: "PUT",
             body: JSON.stringify(cartItem),
@@ -342,10 +356,18 @@ async function buyProduct(){
         });
         let result = await response.json();
        
-        
         if(result.length != 0){
-            // cartItem.length = 0;
-            location.reload();
+            cartItem.length = 0; 
+            setTimeout(() => {    
+                console.log('getProduct Call');
+                bouNowBtn.innerHTML = `Complete`;
+                setTimeout(() => {
+                    
+                    getProduct();
+                    bouNowBtn.innerHTML = `Buy Now`;
+                }, 1000);   
+            }, 5000);
+            // location.reload();
         }
     }
 }
