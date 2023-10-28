@@ -23,7 +23,7 @@
                 width: 300px;
             }
             .price-range-input input {
-                width: 100px;
+                width: 100%;
             }
             .product-img {
                 margin-right: 4px;
@@ -65,19 +65,9 @@
                             <div class="cursorPointer">➕</div>
                         </li> -->
                     </div>
-
-                    <!-- <div class="custom-range-slider mt-3">
-                        <h5>Price Range Search</h5>
-                        <input type="range" class="form-range" value="0" min="0" max="50000" step="1000" id="product-rande-search" />
-                        <div class="price-range-input">
-                            <input type="number" id="product-price-min" placeholder="Min" onkeyup="" />
-                            <input type="number" id="product-price-max" placeholder="Max" onkeyup="" />
-                        </div>
-                    </div> -->
                 </div>
                 <div class="col-sm-4 p-3">
                     <div class="cart-item-list list-group">
-                        <!-- <img src="/assets/photo3.jpg" alt="" srcset=""> -->
                         <!-- <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
                             <div>
                                 <h5>Dell Vostro 14 3400</h5>
@@ -113,6 +103,21 @@
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             Loading...
                         </button> -->
+                    </div>
+
+                    <div class="custom-range-slider mt-3">
+                        <h5>Price Range Search</h5>
+
+                        <div class="price-range-input">
+                            <h6>Min</h6>
+                            <input type="range" class="form-range" value="0" min="0" max="50000" step="1" id="product-rande-search-min" oninput="minPriceRange(this)" />
+                            <input type="number" id="product-price-min" placeholder="Min" oninput="minPriceInput(this)" />
+                        </div>
+                        <div class="price-range-input mt-3">
+                            <h6>Max</h6>
+                            <input type="range" class="form-range" value="0" min="0" max="50000" step="1" id="product-rande-search-max" oninput="maxPriceRange(this)" />
+                            <input type="number" id="product-price-max" placeholder="Max" oninput="maxPriceInput(this)" />
+                        </div>
                     </div>
                 </div>
             </div>

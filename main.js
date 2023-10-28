@@ -1,6 +1,8 @@
 const productList = [];
 const cartItem = [];
 
+const productPriceRange = [];
+
 const allProductList = document.querySelector('.product-list');
 const cartItemList = document.querySelector('.cart-item-list');
 const cartTotalItem = document.querySelector('#cart-total-item');
@@ -8,9 +10,9 @@ const cartTotalPrice = document.querySelector('#cart-total-price');
 const totalCartItemSection = document.querySelector('#total-cart-item-section');
 
 function displayProduct(productList){
-    console.log(productList);
+    // console.log(productList);
     allProductList.innerHTML = productList.map((value) => {
-        let productImage = value.productImg ? "http://172.16.20.5:3000/productImgs/" + value.productImg : location.origin + "/assets/photo3.jpg";
+        let productImage = value.productImg ? "http://localhost:3000/productImgs/" + value.productImg : location.origin + "/assets/photo3.jpg";
 
         return `
         <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
@@ -186,16 +188,16 @@ addProduct.onsubmit = async function(event){
     // prepare the form data
     const formData = new FormData(addProduct);
     // send the request to server
-    let response = await fetch("http://172.16.20.5:3000/products", {
+    let response = await fetch("http://localhost:3000/products", {
         method: "POST",
         body: formData,
     });
 
     // get response
     let result = await response.json();
-    console.log(result);
+    // console.log(result);
     getProduct();
-    // window.location.assign("http://172.16.20.5:5501/")
+    // window.location.assign("http://localhost:5501/")
     
     // clear Input Filed
     document.querySelector('#productName').value = '';
@@ -207,7 +209,7 @@ addProduct.onsubmit = async function(event){
 
 
 async function getProduct(){
-    const productListGet = await fetch(`http://172.16.20.5:3000/products`, {
+    const productListGet = await fetch(`http://localhost:3000/products`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -216,15 +218,19 @@ async function getProduct(){
     
     let result = await productListGet.json();
     [].splice.apply(productList, [0, productList.length].concat(result));  
-    displayProduct(productList);  
+    displayProduct(productList); 
+    
+    // console.log();
+
+    [].splice.apply(productPriceRange, [0, productPriceRange.length].concat(maxProductPriceCheck()));  
 };
 
 window.onload = getProduct();
 
 
 async function deleteProduct(productID){
-    console.log(productID);
-    const productListGet = await fetch(`http://172.16.20.5:3000/products/${productID}`, {
+    // console.log(productID);
+    const productListGet = await fetch(`http://localhost:3000/products/${productID}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -238,7 +244,7 @@ async function deleteProduct(productID){
 
 
 async function editProduct(productID){
-    const productListGet = await fetch(`http://172.16.20.5:3000/products/${productID}`, {
+    const productListGet = await fetch(`http://localhost:3000/products/${productID}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -261,7 +267,7 @@ async function editProduct(productID){
 
 
     //Update Data
-    const UpdateProduct = await fetch(`http://172.16.20.5:3000/products/${productID}`, {
+    const UpdateProduct = await fetch(`http://localhost:3000/products/${productID}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -269,7 +275,7 @@ async function editProduct(productID){
     });
     
     let updateResult = await UpdateProduct.json();
-    console.log(updateResult);
+    // console.log(updateResult);
     // getProduct();
 };
 
@@ -283,18 +289,18 @@ updateProduct.onsubmit = async function(event){
 
     //Product Id
     const editProductID = document.querySelector('#editProductID').value;
-    console.log(editProductID);
+    // console.log(editProductID);
     // send the request to server
-    let response = await fetch(`http://172.16.20.5:3000/products/${editProductID}`, {
+    let response = await fetch(`http://localhost:3000/products/${editProductID}`, {
         method: "PUT",
         body: formData,
     });
 
     // get response
     let result = await response.json();
-    console.log(result);
+    // console.log(result);
     getProduct();
-    // window.location.assign("http://172.16.20.5:5501/")
+    // window.location.assign("http://localhost:5501/")
 }
 
 
@@ -307,7 +313,7 @@ async function buyProduct(){
     if(cartItem.length != 0){
 
         bouNowBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`;
-        let response = await fetch(`http://172.16.20.5:3000/buyproducts`, {
+        let response = await fetch(`http://localhost:3000/buyproducts`, {
             method: "PUT",
             body: JSON.stringify(cartItem),
             headers: {
@@ -319,7 +325,7 @@ async function buyProduct(){
         if(result.length != 0){
             cartItem.length = 0; 
             setTimeout(() => {    
-                console.log('getProduct Call');
+                // console.log('getProduct Call');
                 bouNowBtn.innerHTML = `Complete`;
                 setTimeout(async () => {
                     
@@ -330,4 +336,84 @@ async function buyProduct(){
             // location.reload();
         }
     }
+}
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+const productPriceMax = document.querySelector('#product-price-max');
+const productPriceMin = document.querySelector('#product-price-min');
+const productRandeSearchMax = document.querySelector('#product-rande-search-max');
+const productRandeSearchMin = document.querySelector('#product-rande-search-min');
+
+
+
+function maxProductPriceCheck(){
+    const ProductLength = productList.length;
+    let maxPrice = 0;
+    let minPrice = productList[0].price;
+    for(let i = 0; i < ProductLength; i++){
+        
+        if(maxPrice < productList[i].price){
+            maxPrice = productList[i].price;
+        }
+
+        if(minPrice > productList[i].price){
+            minPrice = productList[i].price;
+        }
+    }
+
+    // Max Slider Range
+    productPriceMax.value = maxPrice;
+    productRandeSearchMax.max = maxPrice;
+    productRandeSearchMax.min = minPrice;
+    productRandeSearchMax.value = maxPrice;
+    
+    // console.dir(productRandeSearchMax);
+
+    // Min Slider Range
+    productPriceMin.value = minPrice;
+    productRandeSearchMin.max = maxPrice;
+    productRandeSearchMin.min = minPrice;
+    productRandeSearchMin.value = minPrice;
+    
+    return [maxPrice, minPrice];
+}
+
+function minPriceRange(data){
+    productPriceMin.value = data.value;
+    productPriceMin.max = data.value;
+    productRandeSearchMax.min = data.value;
+
+    // const productPriceMax = document.querySelector('#product-price-max').value;
+    
+
+    const minPrice = productList.filter(productData =>{
+        return data.value <= productData.price && productData.price <= productPriceMax.value;
+    });
+    displayProduct(minPrice);
+}
+
+function minPriceInput(data){
+    productRandeSearchMin.value = data.value;
+    minPriceRange(data);
+}
+
+function maxPriceRange(data){
+    productPriceMax.value = data.value;
+    productPriceMax.min = data.value;
+    productRandeSearchMin.max = data.value;
+
+    // const productPriceMin = document.querySelector('#product-price-min').value;
+    const maxPrice = productList.filter(productData =>{
+        return data.value >= productData.price && productData.price >= productPriceMin.value;
+    });
+
+    displayProduct(maxPrice);
+}
+
+function maxPriceInput(data){
+    productRandeSearchMax.value = data.value;
+    maxPriceRange(data);
 }
