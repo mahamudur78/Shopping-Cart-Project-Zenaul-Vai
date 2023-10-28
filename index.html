@@ -47,14 +47,10 @@
             <div class="row">
                 <div class="col-sm-8 p-3">
                     <div class="product-list list-group">
-                        <!-- <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
-                            <div>
-                                <h5>Dell Vostro 14 3400 (10)</h5>
-                                <p>48,500TK</p>
-                            </div>
-                            <div id="1" class="item-plus">➕</div>
-                        </li>
                         <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
+                            <h5>Loading...</h5>
+                        </li>
+                        <!-- <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
                             <div>
                                 <h5>Dell Vostro 14 3400 (10)</h5>
                                 <p>48,500TK</p>
@@ -70,14 +66,14 @@
                         </li> -->
                     </div>
 
-                    <div class="custom-range-slider mt-3">
+                    <!-- <div class="custom-range-slider mt-3">
                         <h5>Price Range Search</h5>
                         <input type="range" class="form-range" value="0" min="0" max="50000" step="1000" id="product-rande-search" />
                         <div class="price-range-input">
                             <input type="number" id="product-price-min" placeholder="Min" onkeyup="" />
                             <input type="number" id="product-price-max" placeholder="Max" onkeyup="" />
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="col-sm-4 p-3">
                     <div class="cart-item-list list-group">
@@ -136,18 +132,23 @@
 
                     <!-- Modal body -->
                     <div class="modal-body">
-                        <form method="post" id="add-product">
+                        <form method="post" id="add-product" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="productName" class="form-label">Name</label>
-                                <input type="text" name="productName" class="form-control" id="productName" placeholder="" />
+                                <input type="text" name="productName" class="form-control" id="productName" placeholder="" required />
                             </div>
                             <div class="mb-3">
                                 <label for="productPrice" class="form-label">Price</label>
-                                <input type="number" name="price" class="form-control" id="productPrice" placeholder="" />
+                                <input type="number" name="price" class="form-control" id="productPrice" placeholder="" required />
                             </div>
                             <div class="mb-3">
                                 <label for="productStock" class="form-label">Stock</label>
-                                <input type="number" name="stock" class="form-control" id="productStock" placeholder="" />
+                                <input type="number" name="stock" class="form-control" id="productStock" placeholder="" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="productImg" class="form-label">Product Image</label>
+                                <input class="form-control" name="productImg" type="file" id="productImg" />
                             </div>
 
                             <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save</button>
@@ -176,19 +177,24 @@
 
                     <!-- Modal body -->
                     <div class="modal-body">
-                        <form method="post" id="update-product">
+                        <form method="post" id="update-product" enctype="multipart/form-data">
                             <input type="hidden" id="editProductID" name="_id" />
                             <div class="mb-3">
                                 <label for="productName" class="form-label">Name</label>
-                                <input type="text" name="productName" class="form-control" id="editProductName" placeholder="" />
+                                <input type="text" name="productName" class="form-control" id="editProductName" placeholder="" required />
                             </div>
                             <div class="mb-3">
                                 <label for="productPrice" class="form-label">Price</label>
-                                <input type="number" name="price" class="form-control" id="editProductPrice" placeholder="" />
+                                <input type="number" name="price" class="form-control" id="editProductPrice" placeholder="" required />
                             </div>
                             <div class="mb-3">
                                 <label for="productStock" class="form-label">Stock</label>
-                                <input type="number" name="stock" class="form-control" id="editProductStock" placeholder="" />
+                                <input type="number" name="stock" class="form-control" id="editProductStock" placeholder="" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editproductImg" class="form-label">Update Product Image</label>
+                                <input class="form-control" name="productImg" type="file" id="editproductImg" />
                             </div>
 
                             <button type="submit" id="updateProduct" class="btn btn-primary" data-bs-dismiss="modal">Update</button>

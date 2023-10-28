@@ -8,13 +8,15 @@ const cartTotalPrice = document.querySelector('#cart-total-price');
 const totalCartItemSection = document.querySelector('#total-cart-item-section');
 
 function displayProduct(productList){
-
+    console.log(productList);
     allProductList.innerHTML = productList.map((value) => {
+        let productImage = value.productImg ? "http://172.16.20.5:3000/productImgs/" + value.productImg : location.origin + "/assets/photo3.jpg";
+
         return `
         <li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center">
             <div class="d-inline-flex">
                 <div class="p-2 product-img">
-                    <img src="/assets/photo3.jpg" alt="" srcset="">  
+                    <img src="${productImage}" alt="" srcset="">  
                 </div>
                 <div>
                     <h5>${value.productName} (${value.stock})</h5>
@@ -175,28 +177,6 @@ function itemSearch(data){
     }
 }
 
-// // product-rande-search
-// document.querySelector('#product-rande-search').addEventListener('input', searchDelay(() =>{
-//     const data = document.querySelector('#product-rande-search');
-//     console.log(data.value);
-//     itemRandeSearch(data);
-    
-// },500));
-
-
-// function itemRandeSearch(data){    
-//     var search = new RegExp(data.value , 'i');
-//     let resultArray = productList.filter(item => {
-//         return search.test(item.Price);
-//     });
-
-//     if(resultArray.length != 0){
-//         displayProduct(resultArray);
-//     }else{
-//         allProductList.innerHTML = `<li class="list-group-item list-group-item-action d-inline-flex justify-content-between align-items-center"><h6>Product Not Found</h6></li>`;
-//     }
-// }
-
 // Add Product
 const addProduct = document.querySelector('#add-product');
 
@@ -205,27 +185,17 @@ addProduct.onsubmit = async function(event){
     
     // prepare the form data
     const formData = new FormData(addProduct);
-
-    const productFormData = {};
-    formData.forEach((value, key) => {
-        productFormData[key] = value;
-    });
-
     // send the request to server
-    let response = await fetch("http://localhost:3000/products", {
+    let response = await fetch("http://172.16.20.5:3000/products", {
         method: "POST",
-        body: JSON.stringify(productFormData),
-        headers: {
-            "Content-Type": "application/json",
-        },
+        body: formData,
     });
 
     // get response
     let result = await response.json();
     console.log(result);
     getProduct();
-    // closeModal();
-    // window.location.assign("http://127.0.0.1:5501/")
+    // window.location.assign("http://172.16.20.5:5501/")
     
     // clear Input Filed
     document.querySelector('#productName').value = '';
@@ -237,7 +207,7 @@ addProduct.onsubmit = async function(event){
 
 
 async function getProduct(){
-    const productListGet = await fetch(`http://localhost:3000/products`, {
+    const productListGet = await fetch(`http://172.16.20.5:3000/products`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -254,7 +224,7 @@ window.onload = getProduct();
 
 async function deleteProduct(productID){
     console.log(productID);
-    const productListGet = await fetch(`http://localhost:3000/products/${productID}`, {
+    const productListGet = await fetch(`http://172.16.20.5:3000/products/${productID}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -268,7 +238,7 @@ async function deleteProduct(productID){
 
 
 async function editProduct(productID){
-    const productListGet = await fetch(`http://localhost:3000/products/${productID}`, {
+    const productListGet = await fetch(`http://172.16.20.5:3000/products/${productID}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -291,7 +261,7 @@ async function editProduct(productID){
 
 
     //Update Data
-    const UpdateProduct = await fetch(`http://localhost:3000/products/${productID}`, {
+    const UpdateProduct = await fetch(`http://172.16.20.5:3000/products/${productID}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -311,29 +281,20 @@ updateProduct.onsubmit = async function(event){
     // prepare the form data
     const formData = new FormData(updateProduct);
 
-    const productFormData = {};
-    formData.forEach((value, key) => {
-        productFormData[key] = value;
-    });
-
     //Product Id
     const editProductID = document.querySelector('#editProductID').value;
     console.log(editProductID);
     // send the request to server
-    let response = await fetch(`http://localhost:3000/products/${editProductID}`, {
+    let response = await fetch(`http://172.16.20.5:3000/products/${editProductID}`, {
         method: "PUT",
-        body: JSON.stringify(productFormData),
-        headers: {
-            "Content-Type": "application/json",
-        },
+        body: formData,
     });
 
     // get response
     let result = await response.json();
     console.log(result);
     getProduct();
-    // closeModal();
-    // window.location.assign("http://127.0.0.1:5501/")
+    // window.location.assign("http://172.16.20.5:5501/")
 }
 
 
@@ -345,9 +306,8 @@ bouNowBtn.addEventListener('click', searchDelay(() =>{
 async function buyProduct(){
     if(cartItem.length != 0){
 
-        bouNowBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Loading...`;
-        let response = await fetch(`http://localhost:3000/buyproducts`, {
+        bouNowBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...`;
+        let response = await fetch(`http://172.16.20.5:3000/buyproducts`, {
             method: "PUT",
             body: JSON.stringify(cartItem),
             headers: {
@@ -361,9 +321,9 @@ async function buyProduct(){
             setTimeout(() => {    
                 console.log('getProduct Call');
                 bouNowBtn.innerHTML = `Complete`;
-                setTimeout(() => {
+                setTimeout(async () => {
                     
-                    getProduct();
+                    await getProduct();
                     bouNowBtn.innerHTML = `Buy Now`;
                 }, 1000);   
             }, 5000);

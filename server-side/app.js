@@ -1,12 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require("path");
 const app = express();
+
+
+const productUpload = require("./productUpload");
+
 const PORT = 3000;
 
 const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
+
+app.use(express.static('uploads'));
+
 
 mongoose.connect('mongodb+srv://mahamudur789:iRq41JPW4irpjdDv@uttra.pt1sfo4.mongodb.net/brta_invoice_db?retryWrites=true&w=majority', {
   useNewUrlParser: true,
@@ -18,6 +26,7 @@ const Product = mongoose.model('Product', {
   productName: String,
   price: Number,
   stock: Number,
+  productImg: String,
 });
 
 // Get all products
@@ -48,9 +57,15 @@ app.get('/products/:id', async (req, res) => {
 });
 
 // Create a new product
-app.post('/products', async (req, res) => {
+app.post('/products', productUpload, async (req, res) => {
   const newProduct = req.body;
+  
   try {
+
+    if (req.files && req.files.length > 0) {
+      newProduct.productImg = req.files[0].filename
+    }
+
     const createdProduct = await Product.create(newProduct);
     res.status(201).json(createdProduct);
   } catch (error) {
@@ -59,12 +74,17 @@ app.post('/products', async (req, res) => {
 });
 
 // Update a product by ID
-app.put('/products/:id', async (req, res) => {
+app.put('/products/:id', productUpload, async (req, res) => {
   const productId = req.params.id;
   
   const updatedProduct = req.body;
-//   console.log(updatedProduct);
+
   try {
+    if (req.files && req.files.length > 0) {
+        updatedProduct.productImg = req.files[0].filename
+    }
+    console.log(updatedProduct);
+
     const product = await Product.findOneAndUpdate({ _id: productId }, updatedProduct, { new: true });
     if (product) {
       res.json(product);
