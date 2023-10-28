@@ -306,7 +306,7 @@ bouNowBtn.addEventListener('click', searchDelay(() =>{
 async function buyProduct(){
     if(cartItem.length != 0){
 
-        bouNowBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Loading...`;
+        bouNowBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`;
         let response = await fetch(`http://172.16.20.5:3000/buyproducts`, {
             method: "PUT",
             body: JSON.stringify(cartItem),
@@ -326,7 +326,7 @@ async function buyProduct(){
                     await getProduct();
                     bouNowBtn.innerHTML = `Buy Now`;
                 }, 1000);   
-            }, 5000);
+            }, 2000);
             // location.reload();
         }
     }
